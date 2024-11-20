@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            text-align: center;
+        }
+        #output {
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload an Image</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="imageInput" name="image" accept="image/*" required>
+            <button type="submit">Upload</button>
+        </form>
+        <div id="output"></div>
+        <div id="jsonResult"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let formData = new FormData();
+            let imageInput = document.getElementById('imageInput');
+            formData.append('image', imageInput.files[0]);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResult(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        function displayResult(data) {
+            let outputDiv = document.getElementById('output');
+            let jsonResultDiv = document.getElementById('jsonResult');
+
+            outputDiv.innerHTML = '<h2>Bounding Boxes and Details</h2>';
+            jsonResultDiv.innerHTML = '<pre>' + JSON.stringify(data, null, 4) + '</pre>';
+        }
+    </script>
+</body>
+</html>
